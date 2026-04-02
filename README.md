@@ -28,7 +28,7 @@ For this dataset, there were 8523 rows and 12 columns.
   <img src = "explanatory1.png">
 </p>
 
-The histogram shows that the distribution of `Item_Outlet_Sales` is right-skewed, meaning most products have low to moderate sales.
+Most products have low or medium sales. Only a few products reach high sales. This shows an imbalance in product performance and highlights the need to improve weaker items.
 
 <p align = "center">
   <img src = "explanatory3.png">
