@@ -1,49 +1,100 @@
-<p align = "center"> 
-  <img src = "https://raw.githubusercontent.com/coding-dojo-data-science/CodingDojo_Images/main/data-science.jpg">
+<p align="center">
+  <img src="https://raw.githubusercontent.com/coding-dojo-data-science/CodingDojo_Images/main/data-science.jpg">
 </p>
 
-# Sales Prediction & Insights
+# Optimize Outlet Sales by Understanding What Drives Product Revenue
 
-## Analyzing Product and Outlet Factors that Influence Sales
+## Analyzing Product and Outlet Characteristics to Predict Item-Level Sales
 
-### Data Source:
-Big Mart Sales Dataset  
-https://www.kaggle.com/datasets/brijbhushannanda1979/bigmart-sales-data
+**Author:** Mohamed Shehada
 
-For this dataset, there were 8523 rows and 12 columns.
+---
 
-## To prepare this data, the data was cleaned, and the following processes were performed:
+## Business Problem
 
-### Exploratory Data Analysis
-- During the exploratory data analysis, a histogram was visualized 
-  for `Item_Outlet_Sales` to understand its distribution, a countplot 
-  for `Outlet_Type` to explore category frequencies, and a boxplot 
-  for `Item_MRP` to examine the spread and outliers in item pricing.
-- Also, a correlation heatmap was visualized to explore the 
-  relationships between all numeric features.
-- This gave a good baseline for all of the numeric and categorical 
-  columns for univariate EDA.
+Retailers carry hundreds of products across multiple outlet types and locations, yet not all products perform equally. Without knowing which product and outlet factors drive sales, inventory decisions, pricing strategies, and outlet expansions are made blindly.
 
-<p align = "center">
-  <img src = "explanatory1.png">
+This project identifies the key drivers of item-level outlet sales and delivers a predictive model that allows the retailer to forecast expected revenue for any product-outlet combination — enabling smarter, data-driven business decisions.
+
+---
+
+## Data
+
+**Source:** [Big Mart Sales Data — Kaggle](https://www.kaggle.com/datasets/brijbhushannanda1979/bigmart-sales-data)
+
+The dataset contains sales records for 1,559 products across 10 outlets, including product-level features (weight, fat content, visibility, price, type) and outlet-level features (size, location tier, outlet type, establishment year).
+
+- **Rows:** 8,523
+- **Columns:** 12
+- **Target variable:** `Item_Outlet_Sales` (sales in dollars)
+
+---
+
+## Methods
+
+- Removed inconsistent labels in `Item_Fat_Content` (e.g. "LF" → "Low Fat") to ensure clean categorical encoding.
+- Applied median imputation for `Item_Weight` to avoid bias from outliers.
+- Applied constant imputation ("Missing") for `Outlet_Size` to retain rows while making absent information explicit.
+- Used `OrdinalEncoder` for ordered features and `OneHotEncoder` for nominal features.
+- Wrapped all preprocessing in a `Pipeline` to prevent data leakage.
+
+---
+
+## Results
+
+### Item MRP Is the Strongest Sales Driver
+
+<p align="center">
+  <img src="explanatory4.png">
 </p>
 
-Most products have low or medium sales. Only a few products reach high sales. This shows an imbalance in product performance and highlights the need to improve weaker items.
+Among all features, `Item_MRP` (maximum retail price) shows the strongest correlation with sales at **0.57**. Higher-priced products consistently generate more outlet revenue, suggesting that premium pricing and placement decisions have a measurable impact on performance.
 
-<p align = "center">
-  <img src = "explanatory3.png">
+---
+
+### Supermarket Type 1 Dominates Outlet Distribution
+
+<p align="center">
+  <img src="explanatory3.png">
 </p>
 
-The countplot shows that `Supermarket Type1` is the most frequent outlet type in the dataset.
+`Supermarket Type1` is by far the most frequent outlet type in the dataset. Any inventory or sales strategy targeting this outlet type will have the broadest reach across the retailer's network.
 
-<p align = "center">
-  <img src = "explanatory2.png">
-</p>
+---
 
-The boxplot shows that `Item_MRP` mostly ranges between 100 and 200, with a few outliers on the lower end.
+## Model
 
-<p align = "center">
-  <img src = "explanatory4.png">
-</p>
+A **Tuned Random Forest Regressor** was selected as the final model after comparing three approaches:
 
-The heatmap shows that the strongest correlation is between `Item_MRP` and `Item_Outlet_Sales` at **0.57**.
+| Model | Train R² | Test R² | Test RMSE |
+|---|---|---|---|
+| Linear Regression | 0.562 | 0.567 | $1,092 |
+| Default Random Forest | 0.938 | 0.558 | $1,104 |
+| **Tuned Random Forest** | **0.643** | **0.606** | **$1,042** |
+
+The tuned model explains **~61% of the variation in product sales** and predicts sales within an average error of **$1,042**. RMSE was chosen as the reporting metric because it is expressed in the same unit as sales (dollars), making it directly interpretable for business stakeholders.
+
+The tuned model reduces the overfitting gap from **0.38** (default RF) down to just **0.037**, meaning it generalizes reliably to new, unseen products and outlets.
+
+---
+
+## Recommendations
+
+- **Focus on high-MRP products:** Since item price is the strongest predictor, prioritizing premium product stocking — especially in high-traffic outlets — is likely to drive the most revenue growth.
+- **Invest in Supermarket Type 1 outlets:** Given their dominance in the data, optimizing operations and inventory at Type 1 supermarkets will have the highest business impact.
+- **Use the model for demand forecasting:** The tuned Random Forest can estimate expected sales for new product-outlet combinations before committing to inventory decisions.
+
+---
+
+## Limitations & Next Steps
+
+- The model explains ~61% of sales variation — the remaining ~39% may be driven by factors not in the dataset (promotions, seasonality, competitor pricing).
+- `Outlet_Size` had missing values that were imputed; better outlet-level data collection would improve accuracy.
+- Next steps include testing Gradient Boosting or XGBoost and engineering new features such as outlet age from `Outlet_Establishment_Year`.
+
+---
+
+## For Further Information
+
+For any additional questions, please contact: **eng.mdshehada@gmail.com
+**
